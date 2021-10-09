@@ -1,5 +1,5 @@
 ﻿/*
-9.	Метод пузырьков и метод выбора
+9.	Сортировки методом пузырька и выборки
 */
 
 #include <iostream>
@@ -7,7 +7,6 @@
 using namespace std;
 
 // Функция для проверки вводимого значения
-
 int inputInt() {
     int number;
 
@@ -27,6 +26,7 @@ int inputInt() {
     return number;
 }
 
+// Функция вывода массива
 void printArray(int array[], int size)
 {
     cout << "  ";
@@ -36,6 +36,7 @@ void printArray(int array[], int size)
     cout << "\n";
 }
 
+// Функция сортировки выборки
 void selectionSort(int array[], int size) 
 {
     int countCompare = 0; // количество сравнений
@@ -55,6 +56,7 @@ void selectionSort(int array[], int size)
             }
         }
 
+        // Перестановка чисел в массиве
         int temp = array[minIndex];
         array[minIndex] = array[step];
         array[step] = temp;    
@@ -70,6 +72,7 @@ void selectionSort(int array[], int size)
     cout << "  Время работы сортировки: " << time << " ns" << endl;
 }
 
+// Функция пузырьковой сортировки
 void bubbleSort(int array[], int size) 
 {
     int countCompare = 0; // количество сравнений
@@ -84,6 +87,8 @@ void bubbleSort(int array[], int size)
             if (array[i] > array[i + 1]) 
             {
                 countSwap++;
+
+                // Перестановка чисел в массиве
                 int temp = array[i];
                 array[i] = array[i + 1];
                 array[i + 1] = temp;
@@ -97,48 +102,6 @@ void bubbleSort(int array[], int size)
 
     cout << "\n";
     cout << "  Количество сравнений:    " << countCompare << "\n";
-    cout << "  Количество перестановок: " << countSwap << "\n";
-    cout << "  Время работы сортировки: " << time << " ns" << endl;
-
-}
-
-void bubbleSortOld(int array[], int size) 
-{
-    int secondToLast = size - 1; // Индекс предпоследнего элемента
-    int countCompare = 0; // количество сравнений
-    int countSwap = 0;    // количество перестановок
-
-    bool isSwap = false; // Произошла ли перестановка
-
-    auto begin = chrono::high_resolution_clock::now();
-    for (int i = 0; i < secondToLast; i++) {
-        countCompare++;
-
-        if (array[i] > array[i + 1]) {
-
-            int temp = array[i];
-            array[i] = array[i + 1];
-            array[i + 1] = temp;
-
-            isSwap = true;
-            countSwap++;
-
-        }
-
-        if (i == secondToLast-1) {
-            if (isSwap) { 
-                i -= secondToLast; 
-                isSwap = false;
-            }
-        }
-    }
-    auto end = chrono::high_resolution_clock::now(); // конечное время
-    auto time = chrono::duration_cast<chrono::nanoseconds>(end - begin).count(); // искомое время
-
-    printArray(array, size);
-
-    cout << "\n";
-    cout << "  Количество сравнений:    " << countCompare <<"\n";
     cout << "  Количество перестановок: " << countSwap << "\n";
     cout << "  Время работы сортировки: " << time << " ns" << endl;
 }
@@ -160,27 +123,24 @@ int main()
         аrray[i] = rand() % 41 - 20;
     }
 
-    //int array[10] = {-5, 6, -7, 8, -9, 10, -11, 12, -13, 10};
-
     cout << "\n";
     cout << "Первоначальный массив:\n";
     printArray(аrray, sizeArray); cout << "\n";
 
+    // Копирование массива
     int* bаrray = new int[sizeArray];
     for (int i = 0; i < sizeArray; i++) {
         bаrray[i] = аrray[i];
     }
 
-    cout << "Отсортированный массив методом пузырька:\n";
+    cout << "Отсортированный массив пузырьковой сортировкой:\n";
     bubbleSort(аrray, sizeArray);
 
     cout << "\n";
     cout << "Первоначальный массив:\n";
-    printArray(bаrray, sizeArray); cout << "\n";
-
-    cout << "Отсортированный массив методом выборки:\n";
+    printArray(bаrray, sizeArray); 
+    
+    cout << "\n";
+    cout << "Отсортированный массив выборной сортировки:\n";
     selectionSort(bаrray, sizeArray);
-
-
-
 }
