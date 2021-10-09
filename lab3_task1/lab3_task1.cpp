@@ -36,11 +36,77 @@ void printArray(int array[], int size)
     cout << "\n";
 }
 
+void selectionSort(int array[], int size) 
+{
+    int countCompare = 0; // количество сравнений
+    int countSwap = 0;    // количество перестановок
+
+    auto begin = chrono::high_resolution_clock::now();
+    for (int step = 0; step < size - 1; ++step) 
+    {
+        int minIndex = step;
+
+        for (int i = step + 1; i < size; ++i) 
+        {
+            countCompare++;
+            if (array[i] < array[minIndex]) {
+                countSwap++;
+                minIndex = i;
+            }
+        }
+
+        int temp = array[minIndex];
+        array[minIndex] = array[step];
+        array[step] = temp;    
+    }
+    auto end = chrono::high_resolution_clock::now(); // конечное время
+    auto time = chrono::duration_cast<chrono::nanoseconds>(end - begin).count(); // искомое время
+
+    printArray(array, size);
+
+    cout << "\n";
+    cout << "  Количество сравнений:    " << countCompare << "\n";
+    cout << "  Количество перестановок: " << countSwap << "\n";
+    cout << "  Время работы сортировки: " << time << " ns" << endl;
+}
+
 void bubbleSort(int array[], int size) 
 {
+    int countCompare = 0; // количество сравнений
+    int countSwap = 0;    // количество перестановок
+
+    auto begin = chrono::high_resolution_clock::now();
+    for (int step = 0; step < size - 1; ++step) 
+    {
+        for (int i = 0; i < size - (step + 1); ++i) 
+        {
+            countCompare++;
+            if (array[i] > array[i + 1]) 
+            {
+                countSwap++;
+                int temp = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = temp;
+            }
+        }
+    }
+    auto end = chrono::high_resolution_clock::now(); // конечное время
+    auto time = chrono::duration_cast<chrono::nanoseconds>(end - begin).count(); // искомое время
+
+    printArray(array, size);
+
+    cout << "\n";
+    cout << "  Количество сравнений:    " << countCompare << "\n";
+    cout << "  Количество перестановок: " << countSwap << "\n";
+    cout << "  Время работы сортировки: " << time << " ns" << endl;
+
+}
+
+void bubbleSortOld(int array[], int size) 
+{
     int secondToLast = size - 1; // Индекс предпоследнего элемента
-    int countCompare = 0; // Количество сравнений
-    int countSwap = 0; // Количество перестановок
+    int countCompare = 0; // количество сравнений
+    int countSwap = 0;    // количество перестановок
 
     bool isSwap = false; // Произошла ли перестановка
 
@@ -100,10 +166,21 @@ int main()
     cout << "Первоначальный массив:\n";
     printArray(аrray, sizeArray); cout << "\n";
 
+    int* bаrray = new int[sizeArray];
+    for (int i = 0; i < sizeArray; i++) {
+        bаrray[i] = аrray[i];
+    }
+
     cout << "Отсортированный массив методом пузырька:\n";
     bubbleSort(аrray, sizeArray);
 
-    //printArray(array, 10);
+    cout << "\n";
+    cout << "Первоначальный массив:\n";
+    printArray(bаrray, sizeArray); cout << "\n";
+
+    cout << "Отсортированный массив методом выборки:\n";
+    selectionSort(bаrray, sizeArray);
+
 
 
 }
