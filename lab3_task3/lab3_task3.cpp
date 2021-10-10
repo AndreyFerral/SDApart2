@@ -1,4 +1,8 @@
-﻿#include <iostream>
+﻿/*
+29.	Сортировка быстрым и пирамидальным методом
+*/
+
+#include <iostream>
 #include <chrono>
 using namespace std;
 
@@ -36,7 +40,7 @@ void printArray(int array[], int size)
 }
 
 // Функция для обмена элементов
-void swap(int* a, int* b) 
+void swap(int* a, int* b)
 {
     int t = *a;
     *a = *b;
@@ -47,7 +51,7 @@ void swap(int* a, int* b)
 }
 
 // Функция для поиска разделителя массива
-int partition(int array[], int low, int high) 
+int partition(int array[], int low, int high)
 {
     int pivot = array[high]; // выбираем правый элемент как разделитель
     int i = (low - 1);       // индекс для наибольшего элемента
@@ -74,7 +78,7 @@ int partition(int array[], int low, int high)
     return (i + 1);
 }
 
-void quickSort(int array[], int low, int high) 
+void quickSort(int array[], int low, int high)
 {
     if (low < high)
     {
@@ -91,7 +95,7 @@ void quickSort(int array[], int low, int high)
     }
 }
 
-int main() 
+int main()
 {
     srand(time(0)); // генерация случайных чисел
     setlocale(LC_ALL, "Russian");
@@ -113,7 +117,7 @@ int main()
     printArray(аrray, sizeArray); cout << "\n";
 
     auto begin = chrono::high_resolution_clock::now();
-    quickSort(аrray, 0, sizeArray-1);
+    quickSort(аrray, 0, sizeArray - 1);
     auto end = chrono::high_resolution_clock::now(); // конечное время
     auto time = chrono::duration_cast<chrono::nanoseconds>(end - begin).count(); // искомое время
 
@@ -127,7 +131,7 @@ int main()
     cout << "  Время работы сортировки: " << time << " ns" << endl;
 
     // Обнуляем счетчики
-    countCompare = 0; 
+    countCompare = 0;
     countSwap = 0;
 
 }
