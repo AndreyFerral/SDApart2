@@ -7,7 +7,8 @@
 using namespace std;
 
 // Функция для проверки вводимого значения
-int inputInt() {
+int inputInt() 
+{
     int number;
 
     // Проверка на соответствие типу Integer
@@ -125,7 +126,7 @@ int main()
 
     cout << "\n";
     cout << "Первоначальный массив:\n";
-    printArray(аrray, sizeArray); cout << "\n";
+    printArray(аrray, sizeArray);
 
     // Копирование массива
     int* bаrray = new int[sizeArray];
@@ -133,6 +134,7 @@ int main()
         bаrray[i] = аrray[i];
     }
 
+    cout << "\n";
     cout << "Отсортированный массив пузырьковой сортировкой:\n";
     bubbleSort(аrray, sizeArray);
 
