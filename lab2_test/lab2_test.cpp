@@ -22,7 +22,7 @@ void outputVectorOfVectors(vector<vector<int>> vector)
 }
 
 // Функция, которая выводит первую максимальную клику
-void outputMaxClique(vector<vector<int>> vector)
+void outputMaxClique(vector<vector<int>> vector) 
 {
 	int maxCliqueSize = 0;
 	int maxCliqueIndex = 0;
@@ -114,7 +114,7 @@ int main()
 
 	vector<vector<int>> clique; // вектор клик
 	vector<int> helpClique; // клика
-
+	 
 	bool checkClique = true;
 
 	// Заполняем вектор вектором кликами
@@ -124,7 +124,7 @@ int main()
 		helpClique.push_back(i); // добавим первое значение в клику
 
 		for (int j = 0; j < adjacentVertexs[i].size(); ++j)
-		{
+		{	
 			for (int it = 0; it < helpClique.size(); ++it)
 			{
 				// cout << "Сравнение " << adjacentVertexs[i][j] << " и " << help[it] << " \n";
@@ -136,15 +136,15 @@ int main()
 				}
 
 			}
-
+			
 			// Если вершина является смежной со всеми вершинами в клике, то добавим её к клике
-			if (checkClique == true)
+			if (checkClique == true) 
 			{
 				// cout << "Добавил " << adjacentVertexs[i][j] << " \n";
 				helpClique.push_back(adjacentVertexs[i][j]);
 			}
 			else { checkClique = true; }
-
+			
 		}
 
 		// Добавим клику в вектор клик
