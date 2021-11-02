@@ -7,63 +7,77 @@
 #include <iostream>
 using namespace std;
 
-void setRook(int& myarr, int sizeMatrix, int i)
-{
-	for (int j = 0; j < sizeMatrix; ++j)
-	{
-		if (myarr[i][j] != 1) {
-			myarr[i][j] = 1;
-			setRook(myarr, sizeMatrix, i);
-			cout << i << " " << j << " ";
-		}
-	}
+int number = 0;
+const int sizeBoard = 8;
+bool board[sizeBoard][sizeBoard], a[sizeBoard];
 
+void output()
+{
+    cout << endl;
+
+    // Выводим номер перестановки
+    number = number + 1;
+    cout << "Шахматная доска №" << number << "\n";
+
+    // Выводим шахматную доску на экран
+    for (int i = 0; i < sizeBoard; i++) {
+
+        for (int j = 0; j < sizeBoard; j++) {
+
+            cout << board[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+}
+
+void rec(int i)
+{
+    // Если шахматная доска заполнена, то выводим её
+    if (i == 8)
+    {
+        output();
+        return;
+    }
+
+    // Устанавливаем следующую ладью на всевозможные позиции (максимум 7, т.к. первая задана в точке входа)
+    for (int j = 0; j < sizeBoard; j++)
+    {
+        // Проверяем, является ли это поле уже занятым (с учетом того, что это ладья) 
+        if (!a[j])
+        {
+            // Устанавливаем ладья на позицию
+            a[j] = true;
+            board[i][j] = true;
+
+            // Расстанавливаем ладьи на следующей горизонтале
+            rec(i + 1);
+
+            // Очищаем шахматную доску
+            board[i][j] = false;
+            a[j] = false;
+        }
+    }
 }
 
 int main()
 {
-	setlocale(LC_ALL, "Russian");
-	const int sizeMatrix = 8;
+    setlocale(LC_ALL, "Russian");
 
-	int chessBoard[sizeMatrix][sizeMatrix] =
-	{
-		0,0,0,0,0,0,0,0,
-		0,0,0,1,0,1,0,0,
-		0,0,1,0,0,0,1,0,
-		0,0,0,0,1,0,0,0,
-		0,0,1,0,0,0,1,0,
-		0,0,0,1,0,1,0,0,
-		0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0
-	};
+    // i - главная горизонталь, на остальных будут перестановки
+    for (int i = 0; i < sizeBoard; i++)
+    {
+        // Устанавливаем ладья на позицию
+        a[i] = true;
+        board[0][i] = true;
 
-	// Выводим на экран исходный граф
-	cout << "Шахматная доска с конём: " << "\n";
+        // Расстанавливаем ладьи на следующей горизонтале
+        rec(1);
 
-	for (int i = 0; i < 2; ++i)
-	{
-		cout << "    ";
-		for (int j = 0; j < sizeMatrix; ++j)
-		{
-			if (i == 0) cout << j + 1 << " ";
-			if (i == 1) cout << "--";
-		}
-		cout << "\n";
-	}
+        // Очищаем шахматную доску
+        board[0][i] = false;
+        a[i] = false;
+    }
 
-	for (int i = 0; i < sizeMatrix; ++i)
-	{
-		cout << i + 1 << " | ";
-		for (int j = 0; j < sizeMatrix; ++j)
-		{
-			cout << chessBoard[i][j] << " ";
-		}
-		cout << "\n";
-	}
-	cout << "\n";
-
-	for (int i = 0; i < sizeMatrix; ++i)
-	{
-		setRook(chessBoard, sizeMatrix, i);
-	}
+    return 0;
 }

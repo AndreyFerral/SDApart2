@@ -1,85 +1,79 @@
-﻿#include <iostream>
-#include <cstdio>
-#include <cstdlib>
-#define N 10
+﻿
+
+#include <iostream>
 using namespace std;
 
-void displaytheSolution(int path[]);
+int number = 0;
+const int sizeBoard = 8;
+bool board[sizeBoard][sizeBoard], a[sizeBoard];
 
-bool isSafe(int n, bool g[N][N], int path[], int pos) {
-    if (g[path[pos - 1]][n] == 0)
-        return false;
-    for (int i = 0; i < pos; i++)
-        if (path[i] == n)
-            return false;
-    return true;
-}
-bool hamiltonianCycle(bool g[N][N], int path[], int pos) {
-    //If all vertices are included in Hamiltonian Cycle
-    if (pos == N) {
-        if (g[path[pos - 1]][path[0]] == 1)
-            return true;
-        else
-            return false;
+void output()
+{
+    cout << endl;
+
+    // Выводим номер перестановки
+    number = number + 1;
+    cout << "Шахматная доска №" << number << "\n";
+
+    // Выводим шахматную доску на экран
+    for (int i = 0; i < sizeBoard; i++) {
+
+        for (int j = 0; j < sizeBoard; j++) {
+
+            cout << board[i][j] << " ";
+        }
+        cout << endl;
     }
-    for (int n = 1; n < N; n++) {
-        if (isSafe(n, g, path, pos)) { //Check if this vertex can be added to Hamiltonian Cycle
-            path[pos] = n;
-            //recur to construct rest of the path
-            if (hamiltonianCycle(g, path, pos + 1) == true)
-                return true;
-            path[pos] = -1; //remove vertex if it doesn’t lead to the solution
+
+}
+
+void rec(int i)
+{
+    // Если шахматная доска заполнена, то выводим её
+    if (i == 8)
+    {
+        output();
+        return;
+    }
+
+    // Устанавливаем следующую ладью на всевозможные позиции (максимум 7, т.к. первая задана в точке входа)
+    for (int j = 0; j < sizeBoard; j++)
+    {
+        // Проверяем, является ли это поле уже занятым (с учетом того, что это ладья) 
+        if (!a[j])
+        {            
+            // Устанавливаем ладья на позицию
+            a[j] = true;
+            board[i][j] = true;
+
+            // Расстанавливаем ладьи на следующей горизонтале
+            rec(i + 1);
+
+            // Очищаем шахматную доску
+            board[i][j] = false;
+            a[j] = false;
         }
     }
-    return false;
 }
-bool hamCycle(bool g[N][N]) {
-    int* path = new int[N];
-    for (int i = 0; i < N; i++)
-        path[i] = -1;
-    //put vertex 0 as the first vertex in the path. If there is a Hamiltonian Cycle, then the path can be started from any point
-    //of the cycle as the graph is undirected
-    path[0] = 0;
-    if (hamiltonianCycle(g, path, 1) == false) {
-        cout << "\nCycle does not exist" << endl;
-        return false;
-    }
-    displaytheSolution(path);
-    return true;
-}
-void displaytheSolution(int p[]) {
-    cout << "Cycle Exists:";
-    cout << " Following is one Hamiltonian Cycle \n" << endl;
-    for (int i = 0; i < N; i++)
-        cout << p[i] << " ";
-    cout << p[0] << endl;
-}
-int main() {
-    /*
-    bool g[N][N] = 
-    {  
-       {0, 1, 0, 1, 1},
-       {0, 0, 1, 1, 0},
-       {0, 1, 0, 1, 1},
-       {1, 1, 1, 0, 1},
-       {0, 1, 1, 0, 0},
-    };
-    */
 
-    bool matrixAdjacency[N][N] =
+int main()
+{
+    setlocale(LC_ALL, "Russian");
+
+    // i - главная горизонталь, на остальных будут перестановки
+    for (int i = 0; i < sizeBoard; i++)
     {
-        0,0,0,0,0,1,0,0,0,0,
-        0,0,1,0,0,0,1,0,0,0,
-        0,1,0,1,0,0,0,1,0,0,
-        0,0,1,0,1,0,0,0,1,0,
-        1,0,0,1,0,0,0,0,0,1,
-        0,0,0,0,0,0,1,0,0,1,
-        0,0,0,1,0,0,0,1,0,0,
-        0,0,0,0,1,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,1,
-        0,0,0,0,0,0,0,0,0,0
-    };
+        // Устанавливаем ладья на позицию
+        a[i] = true;
+        board[0][i] = true;
 
-    hamCycle(matrixAdjacency);
+        // Расстанавливаем ладьи на следующей горизонтале
+        rec(1);
+
+        // Очищаем шахматную доску
+        board[0][i] = false;
+        a[i] = false;
+    }
+
     return 0;
 }
