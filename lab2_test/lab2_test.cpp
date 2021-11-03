@@ -1,123 +1,111 @@
 ﻿/*
-19.	В центре шахматной доски стоит конь.
-Найти все расположения восьми ладей, не угрожающих друг другу,
-при которых конь не угрожает ни одной из ладей.
+29. Найти гамильтонов цикл в простом графе, имеющий максимальную длину.
 */
 
 #include <iostream>
 using namespace std;
 
-class ChessBoard {
+class HamiltonCircle {
 
-    int number = 0;                   // номер шахматной доски
-    static const int sizeBoard = 8;   // размерность шахматной доски
-    bool board[sizeBoard][sizeBoard]; // шахматная доска
-    bool colorRook[sizeBoard];        // расположение ладьей
+	static const int sizeGraph = 10; // размер графа
+	int startVertex = 2;			 // начальная вершина
+
+	int color[sizeGraph]; // номер хода, на котором посещается вершина
+	int path[sizeGraph];  // номера посещаемых вершин
+
+	// Матрица смежности
+	int matrixAdjacency[sizeGraph][sizeGraph] =
+	{
+		0,0,0,0,0,1,0,0,0,0,
+		0,0,1,0,0,0,1,0,0,0,
+		0,1,0,1,0,0,0,1,0,0,
+		0,0,1,0,1,0,0,0,1,0,
+		1,0,0,1,0,0,0,0,0,1,
+		0,0,0,0,0,0,1,0,0,1,
+		0,0,0,1,0,0,0,1,0,0,
+		0,0,0,0,1,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,1,
+		0,0,0,0,0,0,0,0,0,0
+	};
 
 public:
+	
+	// Переопределенный конструктор класса
+	HamiltonCircle() {
 
-    // Переопределенный конструктор класса
-    ChessBoard() {
+		// Заполняем массив значением -1
+		for (int i = 0; i < sizeGraph; i++)
+		{
+			color[i] = -1;
+		}
 
-        // Заполняем массивы нулевыми значения
-        for (int i = 0; i < sizeBoard; i++)
-        {
-            colorRook[i] = 0;
+		// Задаем изначения значения
+		path[0] = startVertex;
+		color[startVertex] = startVertex;
+	}
 
-            for (int j = 0; j < sizeBoard; j++) 
-            {
-                board[i][j] = 0;
-            }
-        }
-    }
+	void outputPath()
+	{
+		// Выводим на экран весь путь
+		for (int i = 0; i < sizeGraph; i++)
+		{
+			cout << path[i] << " ";
+		}
+		// Выводим на экран завершающую путь координату
+		cout << path[0] << "\n";
+	}
 
-    // Функция, которая располагает главные ладьи, от которых будет запущена рекурсия
-    void setRooks() {
+	// подпрограмма нахождения гамильтонова цикла
+	bool gamilton(int step)
+	{
+		bool isGamiltonCircleFind = false;
 
-        // i - главная горизонталь, на остальных будут перестановки
-        for (int i = 0; i < sizeBoard; i++)
-        {
-            // Устанавливаем ладья на позицию
-            colorRook[i] = true;
-            board[0][i] = true;
+		// Перебираем все возможны вершины
+		for (int vertex = 0; vertex < sizeGraph && !isGamiltonCircleFind; vertex++)
+		{
+			// Если между двумя вершинами есть путь
+			if (matrixAdjacency[vertex][path[step - 1]] == 1 || matrixAdjacency[path[step - 1]][vertex] == 1)
+			{
+				// Если пройдены все вершины
+				if (step == sizeGraph && vertex == startVertex) {
+					isGamiltonCircleFind = true; // гамильтонов цикл найден
+				}
+				// Если есть не пройденные вершины
+				else if (color[vertex] == -1)
+				{
+					color[vertex] = step; // Добавляем в массив номер хода
+					path[step] = vertex; // Добавляем в массив посещенную вершину
 
-            // Расстанавливаем ладьи на следующей горизонтале
-            nextRow(1);
+					// cout << color[vertex] << " номер хода, " << path[step] << " посещенная вершина\n";
 
-            // Очищаем шахматную доску
-            board[0][i] = false;
-            colorRook[i] = false;
-        }
-    }
+					// Проверяем следующую вершину на соответствие
+					isGamiltonCircleFind = gamilton(step + 1);
 
-    // Функция, которая вызывает рекурсию для каждой следующей ладьи
-    void nextRow(int i)
-    {
-        // Если шахматная доска заполнена, то выводим её
-        if (i == 8)
-        {
-            output();
-            return;
-        }
-
-        // Устанавливаем следующую ладью на всевозможные позиции (максимум 7, т.к. первая задана в точке входа)
-        for (int j = 0; j < sizeBoard; j++)
-        {
-            // Проверяем, является ли это поле уже занятым (с учетом того, что это ладья) 
-            if (!colorRook[j])
-            {
-                // Устанавливаем ладья на позицию
-                colorRook[j] = true;
-                board[i][j] = true;
-
-                // Расстанавливаем ладьи на следующей горизонтале
-                nextRow(i + 1);
-
-                // Очищаем шахматную доску
-                board[i][j] = false;
-                colorRook[j] = false;
-            }
-        }
-    }
-
-    // Функция, которая выводит шахматную доску
-    void output()
-    {
-        // Учитываем, что по середине стоит конь (3;4), остальные - его возможные ходы
-        if (board[1][3] || board[1][5] ||
-            board[2][2] || board[2][6] ||
-            board[3][4] ||
-            board[4][2] || board[4][6] ||
-            board[5][3] || board[5][5])
-        {
-            // cout << "Поле является ошибочным!" << "\n";
-            return;
-        }
-
-        cout << endl;
-
-        // Выводим номер перестановки
-        number = number + 1;
-        cout << "Шахматная доска №" << number << "\n";
-
-        // Выводим шахматную доску на экран
-        for (int i = 0; i < sizeBoard; i++) {
-
-            for (int j = 0; j < sizeBoard; j++) {
-
-                cout << board[i][j] << " ";
-            }
-            cout << endl;
-        }
-    }
+					// Если далее невозможно построить гамильтонов цикл, то откатываемся
+					if (!isGamiltonCircleFind) {
+						color[vertex] = -1;
+						// cout << "откат\n";
+					}
+				}
+				else continue;
+			}
+		}
+		return isGamiltonCircleFind;
+	}
 };
+
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
+	setlocale(LC_ALL, "Russian");
 
-    ChessBoard board;
-    board.setRooks();
+	HamiltonCircle hamil;
+	const int firstStep = 1; // первый шаг для функции поиска цикла
 
-    return 0;
+	cout << "Гамильтонов цикл: \n";
+
+	// Если функцию составила путь, то выводим его
+	if (hamil.gamilton(firstStep)) hamil.outputPath();
+	else cout << "Нет решений \n";
+
 }
