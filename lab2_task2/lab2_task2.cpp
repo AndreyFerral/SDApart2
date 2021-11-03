@@ -9,10 +9,21 @@ using namespace std;
 
 int number = 0;
 const int sizeBoard = 8;
-bool board[sizeBoard][sizeBoard], a[sizeBoard];
+bool board[sizeBoard][sizeBoard], colorRook[sizeBoard];
 
 void output()
 {
+    // Учитываем, что по середине стоит конь (3;4), остальные - его возможные ходы
+    if (board[1][3] || board[1][5] || 
+        board[2][2] || board[2][6] || 
+        board[3][4] || 
+        board[4][2] || board[4][6] || 
+        board[5][3] || board[5][5]) 
+    {
+        // cout << "Поле является ошибочным!" << "\n";
+        return;
+    }
+
     cout << endl;
 
     // Выводим номер перестановки
@@ -28,10 +39,9 @@ void output()
         }
         cout << endl;
     }
-
 }
 
-void rec(int i)
+void nextRow(int i)
 {
     // Если шахматная доска заполнена, то выводим её
     if (i == 8)
@@ -44,18 +54,18 @@ void rec(int i)
     for (int j = 0; j < sizeBoard; j++)
     {
         // Проверяем, является ли это поле уже занятым (с учетом того, что это ладья) 
-        if (!a[j])
+        if (!colorRook[j])
         {
             // Устанавливаем ладья на позицию
-            a[j] = true;
+            colorRook[j] = true;
             board[i][j] = true;
 
             // Расстанавливаем ладьи на следующей горизонтале
-            rec(i + 1);
+            nextRow(i + 1);
 
             // Очищаем шахматную доску
             board[i][j] = false;
-            a[j] = false;
+            colorRook[j] = false;
         }
     }
 }
@@ -68,15 +78,15 @@ int main()
     for (int i = 0; i < sizeBoard; i++)
     {
         // Устанавливаем ладья на позицию
-        a[i] = true;
+        colorRook[i] = true;
         board[0][i] = true;
 
         // Расстанавливаем ладьи на следующей горизонтале
-        rec(1);
+        nextRow(1);
 
         // Очищаем шахматную доску
         board[0][i] = false;
-        a[i] = false;
+        colorRook[i] = false;
     }
 
     return 0;
