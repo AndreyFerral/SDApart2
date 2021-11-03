@@ -1,73 +1,123 @@
-﻿
+﻿/*
+19.	В центре шахматной доски стоит конь.
+Найти все расположения восьми ладей, не угрожающих друг другу,
+при которых конь не угрожает ни одной из ладей.
+*/
 
 #include <iostream>
 using namespace std;
 
-int number = 0;
-const int sizeBoard = 8;
-bool board[sizeBoard][sizeBoard], a[sizeBoard];
+class ChessBoard {
 
-void output()
-{
-    cout << endl;
+    int number = 0;                   // номер шахматной доски
+    static const int sizeBoard = 8;   // размерность шахматной доски
+    bool board[sizeBoard][sizeBoard]; // шахматная доска
+    bool colorRook[sizeBoard];        // расположение ладьей
 
-    //if (board[1][3] || board[1][5] || board[2][2] || board[2][6] || board[3][4] || board[4][2] || board[4][6] || board[5][3] || board[5][5]) return;
+public:
 
-    // Выводим номер перестановки
-    number = number + 1;
-    cout << "Шахматная доска №" << number << "\n";
+    // Переопределенный конструктор класса
+    ChessBoard() {
 
-    // Выводим шахматную доску на экран
-    for (int i = 0; i < sizeBoard; i++) {
+        // Заполняем массивы нулевыми значения
+        for (int i = 0; i < sizeBoard; i++)
+        {
+            colorRook[i] = 0;
 
-        for (int j = 0; j < sizeBoard; j++) {
-
-            cout << board[i][j] << " ";
+            for (int j = 0; j < sizeBoard; j++) 
+            {
+                board[i][j] = 0;
+            }
         }
-        cout << endl;
     }
-}
-/*
-// Матрица смежности
-bool board[sizeBoard][sizeBoard] =
-{
-    0,0,0,0,0,0,0,0,
-    0,0,0,1,0,1,0,0,
-    0,0,1,0,0,0,1,0,
-    0,0,0,0,1,0,0,0,
-    0,0,1,0,0,0,1,0,
-    0,0,0,1,0,1,0,0,
-    0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0
+
+    // Функция, которая располагает главные ладьи, от которых будет запущена рекурсия
+    void setRooks() {
+
+        // i - главная горизонталь, на остальных будут перестановки
+        for (int i = 0; i < sizeBoard; i++)
+        {
+            // Устанавливаем ладья на позицию
+            colorRook[i] = true;
+            board[0][i] = true;
+
+            // Расстанавливаем ладьи на следующей горизонтале
+            nextRow(1);
+
+            // Очищаем шахматную доску
+            board[0][i] = false;
+            colorRook[i] = false;
+        }
+    }
+
+    // Функция, которая вызывает рекурсию для каждой следующей ладьи
+    void nextRow(int i)
+    {
+        // Если шахматная доска заполнена, то выводим её
+        if (i == 8)
+        {
+            output();
+            return;
+        }
+
+        // Устанавливаем следующую ладью на всевозможные позиции (максимум 7, т.к. первая задана в точке входа)
+        for (int j = 0; j < sizeBoard; j++)
+        {
+            // Проверяем, является ли это поле уже занятым (с учетом того, что это ладья) 
+            if (!colorRook[j])
+            {
+                // Устанавливаем ладья на позицию
+                colorRook[j] = true;
+                board[i][j] = true;
+
+                // Расстанавливаем ладьи на следующей горизонтале
+                nextRow(i + 1);
+
+                // Очищаем шахматную доску
+                board[i][j] = false;
+                colorRook[j] = false;
+            }
+        }
+    }
+
+    // Функция, которая выводит шахматную доску
+    void output()
+    {
+        // Учитываем, что по середине стоит конь (3;4), остальные - его возможные ходы
+        if (board[1][3] || board[1][5] ||
+            board[2][2] || board[2][6] ||
+            board[3][4] ||
+            board[4][2] || board[4][6] ||
+            board[5][3] || board[5][5])
+        {
+            // cout << "Поле является ошибочным!" << "\n";
+            return;
+        }
+
+        cout << endl;
+
+        // Выводим номер перестановки
+        number = number + 1;
+        cout << "Шахматная доска №" << number << "\n";
+
+        // Выводим шахматную доску на экран
+        for (int i = 0; i < sizeBoard; i++) {
+
+            for (int j = 0; j < sizeBoard; j++) {
+
+                cout << board[i][j] << " ";
+            }
+            cout << endl;
+        }
+    }
 };
-*/
 
 int main()
 {
     setlocale(LC_ALL, "Russian");
 
-    board[1][3] = 1;
-    board[1][5] = 1; 
-    board[2][2] = 1; 
-    board[2][6] = 1; 
-    board[3][4] = 1; 
-    board[4][2] = 1; 
-    board[4][6] = 1; 
-    board[5][3] = 1; 
-    board[5][5] = 1;
-
-    /*
-    for (int i = 0; i < sizeBoard; i++) {
-
-        for (int j = 0; j < sizeBoard; j++) {
-
-            board[i][j] = 1;
-        }
-        cout << endl;
-    }
-    */
-
-    output();
+    ChessBoard board;
+    board.setRooks();
 
     return 0;
 }
