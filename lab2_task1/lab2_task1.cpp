@@ -63,7 +63,7 @@ int main()
 	const int sizeArray = 10;
 
 	// Матрица смежности
-	int matrixAdjacency[sizeArray][sizeArray] =
+	bool matrixAdjacency[sizeArray][sizeArray] =
 	{
 		0,0,0,0,0,1,0,0,0,0,
 		0,0,1,0,0,0,1,0,0,0,

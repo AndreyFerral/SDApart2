@@ -44,6 +44,18 @@ public:
 		color[startVertex] = startVertex;
 	}
 
+	void outputGraph()
+	{
+		for (int i = 0; i < sizeGraph; ++i)
+		{
+			for (int j = 0; j < sizeGraph; ++j)
+			{
+				cout << matrixAdjacency[i][j] << " ";
+			}
+			cout << "\n";
+		}
+	}
+
 	void outputPath()
 	{
 		// Выводим на экран весь путь
@@ -70,11 +82,12 @@ public:
 				if (step == sizeGraph && vertex == startVertex) {
 					isGamiltonCircleFind = true; // гамильтонов цикл найден
 				}
+
 				// Если есть не пройденные вершины
 				else if (color[vertex] == -1)
 				{
 					color[vertex] = step; // Добавляем в массив номер хода
-					path[step] = vertex; // Добавляем в массив посещенную вершину
+					path[step] = vertex;  // Добавляем в массив посещенную вершину
 
 					// cout << color[vertex] << " номер хода, " << path[step] << " посещенная вершина\n";
 
@@ -102,10 +115,13 @@ int main()
 	HamiltonCircle hamilton;
 	const int firstStep = 1; // первый шаг для функции поиска цикла
 
+	cout << "Исходный граф: \n";
+	hamilton.outputGraph();
+
+	cout << endl;
 	cout << "Гамильтонов цикл: \n";
 
 	// Если функцию составила путь, то выводим его
 	if (hamilton.gamilton(firstStep)) hamilton.outputPath();
 	else cout << "Нет решений \n";
-
 }
