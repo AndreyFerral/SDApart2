@@ -120,14 +120,15 @@ int main()
 	// Заполняем вектор вектором кликами
 	for (int i = 0; i < adjacentVertexs.size(); ++i)
 	{
-		// cout << "Добавил " << i << " \n";
+		// cout << "\nПроверка соседей вершины " << i << " \n";
+
 		helpClique.push_back(i); // добавим первое значение в клику
 
 		for (int j = 0; j < adjacentVertexs[i].size(); ++j)
 		{
 			for (int it = 0; it < helpClique.size(); ++it)
 			{
-				// cout << "Сравнение " << adjacentVertexs[i][j] << " и " << help[it] << " \n";
+				// cout << "Сравнение " << adjacentVertexs[i][j] << " и " << helpClique[it] << " \n";
 
 				// Если эта вершина не является смежной со всеми вершинами в клике, то не будем добавлять её в клику
 				if (isClique(adjacentVertexs, adjacentVertexs[i][j], helpClique[it]) == false)
@@ -141,6 +142,7 @@ int main()
 			if (checkClique == true)
 			{
 				// cout << "Добавил " << adjacentVertexs[i][j] << " \n";
+
 				helpClique.push_back(adjacentVertexs[i][j]);
 			}
 			else { checkClique = true; }
