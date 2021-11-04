@@ -56,7 +56,7 @@ int main()
     cout << "\nВвёденные числа: " << m << " " << n << "\n\n";
 
     // Вывод чисел
-    for (int number = m; number <= n; number++) {
+    for (int number = n; number >= m; number--) {
         cout << number << " ";
     } cout << "\n";
 }

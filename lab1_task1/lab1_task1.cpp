@@ -46,7 +46,7 @@ public:
         }
 
         // Число должно быть от 1 до 8
-        if (number < 1 || number > 8) number = inputInt();
+        if (number < 1 || number > maxSizeSet) number = inputInt();
         return number;
     }
 
@@ -64,8 +64,25 @@ public:
         }
 
         // Число должно быть от firstNumber до 8
-        if (number < firstNumber || number > 8) number = inputInt(firstNumber);
+        if (number < firstNumber || number > maxSizeSet) number = inputInt(firstNumber);
         return number;
+    }
+
+    // Метод, в котором устанавливается размерность множеств
+    void setSizes() {
+
+        cout << "Правила: \n";
+        cout << "  1. Значения должны быть положительными\n";
+        cout << "  2. Размерность второго множества должна быть >= первого\n";
+        cout << "  3. Максимальная размерность множеств - 8\n\n";
+
+        sizeFirstSet = inputInt();
+        sizeSecondSet = inputInt(sizeFirstSet);
+
+        cout << endl;
+
+        const int firstPosition = 0;
+        setElementOnPosition(firstPosition);
     }
 
     // Метод для проверки и вывода готового массива
@@ -104,6 +121,7 @@ public:
 
         // Не выводим массив на экран, если в нём не все элементы
         if (isWrongArray) {
+            // Если сразу прерывать метод, то массив color[] не очистится
             return;
         }
 
@@ -140,23 +158,6 @@ public:
             // Очищаем массив
             firstSet[position] = 0;
         }
-    }
-
-    // Метод, в котором устанавливается размерность множеств
-    void setSizes() {
-
-        cout << "Правила: \n";
-        cout << "  1. Значения должны быть положительными\n";
-        cout << "  2. Размерность второго множества должна быть >= первого\n";
-        cout << "  3. Максимальная размерность множеств - 8\n\n";
-
-        sizeFirstSet = inputInt();
-        sizeSecondSet = inputInt(sizeFirstSet);
-
-        cout << endl;
-
-        const int firstPosition = 0;
-        setElementOnPosition(firstPosition);
     }
 
 };
