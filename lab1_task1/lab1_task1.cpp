@@ -3,54 +3,168 @@
 */
 
 #include <iostream>
+#include <iomanip>
 using namespace std;
 
-// Функция для проверки вводимого значения
-int inputInt() {
-    int number;
+class Surjection {
 
-    // Проверка на соответствие типу Integer
-    while ((!(cin >> number) || (cin.peek() != '\n'))) {
-        cin.clear();
-        while (cin.get() != '\n');
-        cout << "Повторите ввод:\n  > ";
+    int countSurjection = 1; // подсчет количества сюръекций
+
+    static const int maxSizeSet = 8; // максимальный размер множеств
+    int sizeFirstSet = maxSizeSet;   // размерность первого множества
+    int sizeSecondSet = maxSizeSet;  // размерность второго множества
+
+    int numbersFirstSet[maxSizeSet] = { 1, 2, 3, 4, 5, 6, 7, 8 }; // элементы первого множества
+    char lettersSecondSet[maxSizeSet] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' }; // элементы второго множества
+
+    int* firstSet = new int[sizeSecondSet]; // элементы первого множества на позициях второго множества
+    int* color = new int[sizeFirstSet];     // вспомогательный массив для проверки финального массива
+
+public:
+
+    Surjection() {
+
+        // Заполняем массивы нулевыми значения
+        for (int i = 0; i < maxSizeSet; i++)
+        {
+            color[i] = 0;
+            firstSet[i] = 0;
+        }
     }
 
-    // Проверка числа на положительность
-    if (number <= 0) {
-        cout << "Повторите ввод:\n  > ";
-        number = inputInt();
+    // Метод для проверки вводимого значения первого множества
+    int inputInt() {
+        int number;
+
+        cout << "  Установите размерность для первого множества:\n  > ";
+
+        // Проверка на соответствие типу Integer
+        while ((!(cin >> number) || (cin.peek() != '\n'))) {
+            cin.clear();
+            while (cin.get() != '\n');
+            cout << "  Установите размерность для первого множества:\n  > ";
+        }
+
+        // Число должно быть от 1 до 8
+        if (number < 1 || number > 8) number = inputInt();
+        return number;
     }
 
-    return number;
-}
+    // Метод для проверки вводимого значения второго множества
+    int inputInt(int firstNumber) {
+        int number;
+
+        cout << "  Установите размерность для второго множества:\n  > ";
+
+        // Проверка на соответствие типу Integer
+        while ((!(cin >> number) || (cin.peek() != '\n'))) {
+            cin.clear();
+            while (cin.get() != '\n');
+            cout << "  Установите размерность для второго множества:\n  > ";
+        }
+
+        // Число должно быть от firstNumber до 8
+        if (number < firstNumber || number > 8) number = inputInt(firstNumber);
+        return number;
+    }
+
+    // Метод для проверки и вывода готового массива
+    void output() {
+
+        // Выводим только те массивы, которые является монотонно невозрастающими
+        for (int i = 0; i < sizeSecondSet - 1; i++)
+        {
+            if (firstSet[i] < firstSet[i + 1]) return;
+        }
+
+        bool isWrongArray = false; // isWrongArray - массив не соответствует условиям
+
+        // Заполняем вспомогательный массив, в котором
+        // 1 - данная цифра имеется в массиве, 0 - не имеется
+        for (int i = 0; i < sizeSecondSet; i++)
+        {
+            for (int j = 0; j < sizeFirstSet; j++)
+            {
+                if (firstSet[i] == numbersFirstSet[j]) color[j] = true;
+            }
+        }
+
+        // Просматриваем каждый элемент вспомогательного массива
+        for (int i = 0; i < sizeFirstSet; i++)
+        {
+            // Если в массиве не было найдено всех элементов из массива (значение 0)
+            if (color[i] == false) isWrongArray = true;
+
+            // cout << color[i] << " ";
+
+            // Очищаем массив
+            color[i] = false;
+        }
+        // cout << endl;
+
+        // Не выводим массив на экран, если в нём не все элементы
+        if (isWrongArray) {
+            return;
+        }
+
+        // Выводим номер массива на экран
+        cout << setw(5) << countSurjection << ") ";
+        countSurjection++;
+
+        // Выводим массив на экран
+        for (int i = 0; i < sizeSecondSet; i++)
+        {
+            cout << firstSet[i] << lettersSecondSet[i] << " ";
+        }
+        cout << endl;
+    }
+
+    // Рекурсивный метод для построения массива
+    void setElementOnPosition(int position) {
+
+        // Если на всех позициях установлены элементы
+        if (position == sizeSecondSet) {
+
+            output();
+            return;
+        }
+
+        for (int i = 0; i < sizeFirstSet; i++)
+        {
+            // Устанавливаем элемент на позицию
+            firstSet[position] = numbersFirstSet[i];
+
+            // Вызываем рекурсию для последующих позиций
+            setElementOnPosition(position + 1);
+
+            // Очищаем массив
+            firstSet[position] = 0;
+        }
+    }
+
+    // Метод, в котором устанавливается размерность множеств
+    void setSizes() {
+
+        cout << "Правила: \n";
+        cout << "  1. Значения должны быть положительными\n";
+        cout << "  2. Размерность второго множества должна быть >= первого\n";
+        cout << "  3. Максимальная размерность множеств - 8\n\n";
+
+        sizeFirstSet = inputInt();
+        sizeSecondSet = inputInt(sizeFirstSet);
+
+        cout << endl;
+
+        const int firstPosition = 0;
+        setElementOnPosition(firstPosition);
+    }
+
+};
 
 int main()
 {
     setlocale(LC_ALL, "Russian");
 
-    cout << "Правила: \n";
-    cout << "  1. Значения должны быть положительными\n\n";
-
-    /*
-    cout << "Введите количество значений в первом множестве:\n  > ";
-    int firstCountNumbers = inputInt();
-
-    cout << "Введите количество значений во втором множестве:\n  > ";
-    int secondCountNumbers = inputInt();
-    */
-
-    int firstSetNumbers[3] = { 5, 8, 9 };
-    int secondSetNumbers[4] = { 5, 10, 12, 15 };
-
-    for (int j = 0; j < 4; j++) {
-        for (int i = 0; i < 4; i++) {
-            int f = i % 3;
-            cout << "{" << firstSetNumbers[f] << ", " << secondSetNumbers[j] << "}" << " ";
-        }
-        cout << "\n";
-    }
-
-    //std::cout << "Вариант 9\n";
-    //std::cout << firstSet << " " << secondSet;
+    Surjection surjection;
+    surjection.setSizes();
 }
