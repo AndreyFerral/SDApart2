@@ -1,180 +1,132 @@
-﻿// Huffman Coding in C++
-
-#include <iostream>
+﻿#include <iostream>
+#include <vector>
+#include <iomanip>
 using namespace std;
 
-#define MAX_TREE_HT 50
+vector<vector<int>> all;
 
-struct MinHNode {
-    unsigned freq;
-    char item;
-    struct MinHNode* left, * right;
-};
+void sortdir(int array[], int i, int j, int dir) { //возрастание или убывание
 
-struct MinH {
-    unsigned size;
-    unsigned capacity;
-    struct MinHNode** array;
-};
+	//countSort++;
+	//cout << countSort << ". Сравниваем " << array[i] << " и " << array[j] << " \n";
 
-// Creating Huffman tree node
-struct MinHNode* newNode(char item, unsigned freq) {
-    struct MinHNode* temp = (struct MinHNode*)malloc(sizeof(struct MinHNode));
+	// Исправить цифру 8 !!!!!!!!!!
+	vector<int> oneArray;
+	for (int cnt = 0; cnt < 8; cnt++) {
+		oneArray.push_back(array[cnt]);
+	}
+	all.push_back(oneArray);
 
-    temp->left = temp->right = NULL;
-    temp->item = item;
-    temp->freq = freq;
+	if (dir == (array[i] > array[j])) {
 
-    return temp;
+		//cout << "Меняем местами " << array[i] << " и " << array[j] << " \n";
+
+		swap(array[i], array[j]);
+	}
 }
 
-// Create min heap using given capacity
-struct MinH* createMinH(unsigned capacity) {
-    struct MinH* minHeap = (struct MinH*)malloc(sizeof(struct MinH));
-    minHeap->size = 0;
-    minHeap->capacity = capacity;
-    minHeap->array = (struct MinHNode**)malloc(minHeap->capacity * sizeof(struct MinHNode*));
-    return minHeap;
+/* Pекурсивно сортирует последовательность в порядке возрастания
+   (dir == 1), или убывания (dir == 0).
+   Сортируемая последовательность начинается с младшей позиции индекса,
+   параметр cnt - это количество элементов для сортировки. */
+void merge(int array[], int low, int cnt, int dir) {
+	if (cnt > 1) {
+		int k = cnt / 2;
+		for (int i = low; i < low + k; i++) sortdir(array, i, i + k, dir);
+		merge(array, low, k, dir);
+		merge(array, low + k, k, dir);
+	}
 }
 
-// Print the array
-void printArray(int arr[], int n) {
-    int i;
-    for (i = 0; i < n; ++i)
-        cout << arr[i];
-
-    cout << "\n";
+/* Создаём последовательность рекурсивно.
+   Сортируем две половинки, затем вызываем merge */
+void sort(int array[], int low, int cnt, int dir) {
+	if (cnt > 1) {
+		int k = cnt / 2;
+		sort(array, low, k, 1);
+		sort(array, low + k, k, 0);
+		merge(array, low, cnt, dir);
+	}
 }
 
-// Swap function
-void swapMinHNode(struct MinHNode** a, struct MinHNode** b) {
-    struct MinHNode* t = *a;
-    *a = *b;
-    *b = t;
-}
+void output(int array[], int size) {
 
-// Heapify
-void minHeapify(struct MinH* minHeap, int idx) {
-    int smallest = idx;
-    int left = 2 * idx + 1;
-    int right = 2 * idx + 2;
-
-    if (left < minHeap->size && minHeap->array[left]->freq < minHeap->array[smallest]->freq)
-        smallest = left;
-
-    if (right < minHeap->size && minHeap->array[right]->freq < minHeap->array[smallest]->freq)
-        smallest = right;
-
-    if (smallest != idx) {
-        swapMinHNode(&minHeap->array[smallest],
-            &minHeap->array[idx]);
-        minHeapify(minHeap, smallest);
-    }
-}
-
-// Check if size if 1
-int checkSizeOne(struct MinH* minHeap) {
-    return (minHeap->size == 1);
-}
-
-// Extract the min
-struct MinHNode* extractMin(struct MinH* minHeap) {
-    struct MinHNode* temp = minHeap->array[0];
-    minHeap->array[0] = minHeap->array[minHeap->size - 1];
-
-    --minHeap->size;
-    minHeapify(minHeap, 0);
-
-    return temp;
-}
-
-// Insertion
-void insertMinHeap(struct MinH* minHeap, struct MinHNode* minHeapNode) {
-    ++minHeap->size;
-    int i = minHeap->size - 1;
-
-    while (i && minHeapNode->freq < minHeap->array[(i - 1) / 2]->freq) {
-        minHeap->array[i] = minHeap->array[(i - 1) / 2];
-        i = (i - 1) / 2;
-    }
-
-    minHeap->array[i] = minHeapNode;
-}
-
-// BUild min heap
-void buildMinHeap(struct MinH* minHeap) {
-    int n = minHeap->size - 1;
-    int i;
-
-    for (i = (n - 1) / 2; i >= 0; --i)
-        minHeapify(minHeap, i);
-}
-
-int isLeaf(struct MinHNode* root) {
-    return !(root->left) && !(root->right);
-}
-
-struct MinH* createAndBuildMinHeap(char item[], int freq[], int size) {
-    struct MinH* minHeap = createMinH(size);
-
-    for (int i = 0; i < size; ++i)
-        minHeap->array[i] = newNode(item[i], freq[i]);
-
-    minHeap->size = size;
-    buildMinHeap(minHeap);
-
-    return minHeap;
-}
-
-struct MinHNode* buildHfTree(char item[], int freq[], int size) {
-    struct MinHNode* left, * right, * top;
-    struct MinH* minHeap = createAndBuildMinHeap(item, freq, size);
-
-    while (!checkSizeOne(minHeap)) {
-        left = extractMin(minHeap);
-        right = extractMin(minHeap);
-
-        top = newNode('$', left->freq + right->freq);
-
-        top->left = left;
-        top->right = right;
-
-        insertMinHeap(minHeap, top);
-    }
-    return extractMin(minHeap);
-}
-void printHCodes(struct MinHNode* root, int arr[], int top) {
-    if (root->left) {
-        arr[top] = 0;
-        printHCodes(root->left, arr, top + 1);
-    }
-
-    if (root->right) {
-        arr[top] = 1;
-        printHCodes(root->right, arr, top + 1);
-    }
-    if (isLeaf(root)) {
-        cout << root->item << "  | ";
-        printArray(arr, top);
-    }
-}
-
-// Wrapper function
-void HuffmanCodes(char item[], int freq[], int size) {
-    struct MinHNode* root = buildHfTree(item, freq, size);
-
-    int arr[MAX_TREE_HT], top = 0;
-
-    printHCodes(root, arr, top);
+	for (int i = 0; i < size; i++) {
+		cout << array[i] << " ";
+	}
+	cout << endl;
 }
 
 int main() {
-    char arr[] = { 'A', 'B', 'C', 'D' };
-    int freq[] = { 5, 1, 6, 3 };
+	srand(time(0)); // генерация случайных чисел
+	setlocale(LC_ALL, "Russian");
 
-    int size = sizeof(arr) / sizeof(arr[0]);
+	const int size = 8;
+	int array[size];
 
-    cout << "Char | Huffman code ";
-    cout << "\n----------------------\n";
-    HuffmanCodes(arr, freq, size);
+	// Заполняем массив случайными числами
+	for (int i = 0; i < size; i++) {
+		array[i] = rand() % 10;
+	}
+
+	cout << setw(25) << "Изначальный массив: ";
+	output(array, size);
+
+	// Отсортировать массив по возрастанию (последний параметр)
+	sort(array, 0, size, 1);
+
+	cout << setw(25) << "Отсортированный массив: ";
+	output(array, size);
+
+	cout << endl;
+	cout << "\t Сортировочная сеть:";
+	cout << endl << endl;
+
+	cout << "\t 0.   " << all[0][0] << " ---- " << all[2][0] << " ---" <<    "-"    << "----- " << all[4][0]  << " ---- " << all[12][0] << " ---" <<    "-"     << "----" <<    "-"     << "----" <<    "-"     << "----- " << all[16][0] << " ---" <<    "-"     << "----- " << all[18][0] << "\n";
+	cout << "\t      " <<    "|"    << " ---- " <<    "|"    << " ---" <<    "-"    << "----- " <<    "|"     << " ---- " <<    "|"     << " ---" <<    "-"     << "----" <<    "-"     << "----" <<    "-"     << "----- " <<    "|"     << " ---" <<    "-"     << "----- " <<    "|"    << "\n";
+	cout << "\t 1.   " << all[0][1] << " ---- " <<    "|"    << " -- " << all[3][1] << " ---- " << all[4][1]  << " ---- " <<    "|"     << " -- " << all[13][1] << " ---" <<    "-"     << "----" <<    "-"     << "----- " <<    "|"     << " -- " << all[17][1] << " ---- " << all[18][1] << "\n";
+	cout << "\t      " <<    "-"    << "----- " <<    "|"    << " -- " <<    "|"    << " -----" <<    "-"     << "----- " <<    "|"     << " -- " <<    "|"     << " ---" <<    "-"     << "----" <<    "-"     << "----- " <<    "|"     << " -- " <<    "|"     << " -----" <<    "-"     << "\n";
+	cout << "\t 2.   " << all[1][2] << " ---- " << all[2][2] << " -- " <<    "|"    << " ---- " << all[5][2]  << " ---- " <<    "|"     << " -- " <<    "|"     << " -- " << all[14][2] << " ---" <<    "-"     << "----- " << all[16][2] << " -- " <<    "|"     << " ---- " << all[19][2] << "\n";
+	cout << "\t      " <<    "|"    << " -----" <<    "-"    << "--- " <<    "|"    << " ---- " <<    "|"     << " ---- " <<    "|"     << " -- " <<    "|"     << " -- " <<    "|"     << " ---" <<    "-"     << "------" <<    "-"     << "--- " <<    "|"     << " ---- " <<    "|"     << "\n";
+	cout << "\t 3.   " << all[1][3] << " -----" <<    "-"    << "--- " << all[3][3] << " ---- " << all[5][3]  << " ---- " <<    "|"     << " -- " <<    "|"     << " -- " <<    "|"     << " -- " << all[15][3] << " -----" <<    "-"     << "--- " << all[17][3] << " ---- " << all[19][3] << "\n";
+	cout << "\t      " <<    "-"    << "------" <<    "-"    << "----" <<    "-"    << "------" <<    "-"     << "----- " <<    "|"     << " -- " <<    "|"     << " -- " <<    "|"     << " -- " <<    "|"     << " -----" <<    "-"     << "----" <<    "-"     << "------" <<    "-"     << "\n";
+	cout << "\t 4.   " << all[6][4] << " ---- " << all[8][4] << " ---" <<    "-"    << "----- " << all[10][4] << " ---- " << all[12][4] << " -- " <<    "|"     << " -- " <<    "|"     << " -- " <<    "|"     << " ---- " << all[20][4] << " ---" <<    "-"     << "----- " << all[22][4] << "\n";
+	cout << "\t      " <<    "|"    << " ---- " <<    "|"    << " ---" <<    "-"    << "----- " <<    "|"     << " -----" <<    "-"     << "--- " <<    "|"     << " -- " <<    "|"     << " -- " <<    "|"     << " ---- " <<    "|"     << " ---" <<    "-"     << "----- " <<    "|"     << "\n";
+	cout << "\t 5.   " << all[6][5] << " ---- " <<    "|"    << " -- " << all[9][5] << " ---- " << all[10][5] << " -----" <<    "-"     << "--- " << all[13][5] << " -- " <<    "|"     << " -- " <<    "|"     << " ---- " <<    "|"     << " -- " << all[21][5] << " ---- " << all[22][5] << "\n";
+	cout << "\t      " <<    "-"    << "----- " <<    "|"    << " -- " <<    "|"    << " -----" <<    "-"     << "------" <<    "-"     << "----" <<    "-"     << "--- " <<    "|"     << " -- " <<    "|"     << " ---- " <<    "|"     << " -- " <<    "|"     << " -----" <<    "-"     << "\n";
+	cout << "\t 6.   " << all[7][6] << " ---- " << all[8][6] << " -- " <<    "|"    << " ---- " << all[11][6] << " -----" <<    "-"     << "----" <<    "-"     << "--- " << all[14][6] << " -- " <<    "|"     << " ---- " << all[20][6] << " -- " <<    "|"     << " ---- " << all[23][6] << "\n";
+	cout << "\t      " <<    "|"    << " -----" <<    "-"    << "--- " <<    "|"    << " ---- " <<    "|"     << " -----" <<    "-"     << "----" <<    "-"     << "----" <<    "-"     << "--- " <<    "|"     << " -----" <<    "-"     << "--- " <<    "|"     << " ---- " <<    "|"     << "\n";
+	cout << "\t 7.   " << all[7][7] << " -----" <<    "-"    << "--- " << all[9][7] << " ---- " << all[11][7] << " -----" <<    "-"     << "----" <<    "-"     << "----" <<    "-"     << "--- " << all[15][7] << " -----" <<    "-"     << "--- " << all[21][7] << " ---- " << all[23][7] << "\n";
+
+
+
+
+
+	/*
+	int tst = 5;
+	cout << "\t 0.   " << tst << " ---- " << tst << " ---" << "-" << "----- " << tst << " ---- " << tst << " ---" << "-" << "----" << "-" << "----" << "-" << "----- " << tst << " ---" << "-" << "----- " << tst << "\n";
+	cout << "\t      " << "|" << " ---- " << "|" << " ---" << "-" << "----- " << "|" << " ---- " << "|" << " ---" << "-" << "----" << "-" << "----" << "-" << "----- " << "|" << " ---" << "-" << "----- " << "|" "\n";
+	cout << "\t 1.   " << tst << " ---- " << "|" << " -- " << tst << " ---- " << tst << " ---- " << "|" << " -- " << tst << " ---" << "-" << "----" << "-" << "----- " << "|" << " -- " << tst << " ---- " << tst << "\n";
+	cout << "\t      " << "-" << "----- " << "|" << " -- " << "|" << " -----" << "-" << "----- " << "|" << " -- " << "|" << " ---" << "-" << "----" << "-" << "----- " << "|" << " -- " << "|" << " -----" << "-" << "\n";
+	cout << "\t 2.   " << tst << " ---- " << tst << " -- " << "|" << " ---- " << tst << " ---- " << "|" << " -- " << "|" << " -- " << tst << " ---" << "-" << "----- " << tst << " -- " << "|" << " ---- " << tst << "\n";
+	cout << "\t      " << "|" << " -----" << "-" << "--- " << "|" << " ---- " << "|" << " ---- " << "|" << " -- " << "|" << " -- " << "|" << " ---" << "-" << "------" << "-" << "--- " << "|" << " ---- " << "|" << "\n";
+	cout << "\t 3.   " << tst << " -----" << "-" << "--- " << tst << " ---- " << tst << " ---- " << "|" << " -- " << "|" << " -- " << "|" << " -- " << tst << " -----" << "-" << "--- " << tst << " ---- " << tst << "\n";
+	cout << "\t      " << "-" << "------" << "-" << "----" << "-" << "------" << "-" << "----- " << "|" << " -- " << "|" << " -- " << "|" << " -- " << "|" << " -----" << "-" << "----" << "-" << "------" << "-" << "\n";
+	cout << "\t 4.   " << tst << " ---- " << tst << " ---" << "-" << "----- " << tst << " ---- " << tst << " -- " << "|" << " -- " << "|" << " -- " << "|" << " ---- " << tst << " ---" << "-" << "----- " << tst << "\n";
+	cout << "\t      " << "|" << " ---- " << "|" << " ---" << "-" << "----- " << "|" << " -----" << "-" << "--- " << "|" << " -- " << "|" << " -- " << "|" << " ---- " << "|" << " ---" << "-" << "----- " << "|" << "\n";
+	cout << "\t 5.   " << tst << " ---- " << "|" << " -- " << tst << " ---- " << tst << " -----" << "-" << "--- " << tst << " -- " << "|" << " -- " << "|" << " ---- " << "|" << " -- " << tst << " ---- " << tst << "\n";
+	cout << "\t      " << "-" << "----- " << "|" << " -- " << "|" << " -----" << "-" << "------" << "-" << "----" << "-" << "--- " << "|" << " -- " << "|" << " ---- " << "|" << " -- " << "|" << " -----" << "-" << "\n";
+	cout << "\t 6.   " << tst << " ---- " << tst << " -- " << "|" << " ---- " << tst << " -----" << "-" << "----" << "-" << "--- " << tst << " -- " << "|" << " ---- " << tst << " -- " << "|" << " ---- " << tst << "\n";
+	cout << "\t      " << "|" << " -----" << "-" << "--- " << "|" << " ---- " << "|" << " -----" << "-" << "----" << "-" << "----" << "-" << "--- " << "|" << " -----" << "-" << "--- " << "|" << " ---- " << "|" << "\n";
+	cout << "\t 7.   " << tst << " -----" << "-" << "--- " << tst << " ---- " << tst << " -----" << "-" << "----" << "-" << "----" << "-" << "--- " << tst << " -----" << "-" << "--- " << tst << " ---- " << tst << "\n";
+	*/
+
+
+
+
+
+
+
+
+	return 0;
 }
