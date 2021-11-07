@@ -27,9 +27,9 @@ public:
 	int getSize() { return sizeArray; }
 
 	// Метод для обмена элементов с учетом порядка возрастания или убывания
-	void sortdir(int i, int j, int dir) {
+	void sortDir(int i, int j, int dir) {
 
-		//cout << ". Сравниваем " << array[i] << " и " << array[j] << " \n";
+		// cout << " Сравниваем " << array[i] << " и " << array[j] << " \n";
 
 		// Закидываем массивы в вектор
 		vector<int> oneArray;
@@ -38,28 +38,35 @@ public:
 		}
 		all.push_back(oneArray);
 
-		// В зависимости от передаваего параметра изменяется порядок сортировки
+		// В зависимости от передаваего параметра изменяется директория сортировки
 		if (dir == (array[i] > array[j])) {
 
-			//cout << "Меняем местами " << array[i] << " и " << array[j] << " \n";
+			// cout << "  Меняем местами " << array[i] << " и " << array[j] << " \n";
 
 			swap(array[i], array[j]);
+
+			// output();
 		}
 	}
 
 	/* Pекурсивно сортирует последовательность в порядке возрастания (dir == 1), или убывания (dir == 0).
-	   Сортируемая последовательность начинается с младшей позиции индекса,
+	   Сортируемая последовательность начинается с младшей позиции индекса - параметр low,
 	   параметр cnt - это количество элементов для сортировки. */
 	void merge(int low, int cnt, int dir) {
 		if (cnt > 1) {
 
-			int k = cnt / 2;
-			for (int i = low; i < low + k; i++) {
-				sortdir(i, i + k, dir);
+			// cout << "Вызван merge от " << low << " до " << low + cnt - 1 << endl;
+
+			int half = cnt / 2;
+
+			// Вызываем метод обмена элементов
+			for (int i = low; i < low + half; i++) {
+				sortDir(i, i + half, dir);
 			}
 
-			merge(low, k, dir);
-			merge(low + k, k, dir);
+			// Рекурсивно сортируем последовательность
+			merge(low, half, dir);
+			merge(low + half, half, dir);
 		}
 	}
 
@@ -67,9 +74,14 @@ public:
 	   Сортируем две половинки, затем вызываем merge */
 	void sort(int low, int cnt, int dir) {
 
+
 		if (cnt > 1) {
 
+			// cout << "Вызван sort от " << low << " до " << low + cnt - 1 << endl;
+
 			int k = cnt / 2;
+
+			// Рекурсивно строим сеть сортировки
 			sort(low, k, 1);
 			sort(low + k, k, 0);
 			merge(low, cnt, dir);
