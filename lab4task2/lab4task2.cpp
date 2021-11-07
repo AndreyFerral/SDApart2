@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <iomanip>
+#include <string> 
 using namespace std;
 
 class BetcherNetwork {
@@ -19,7 +20,7 @@ public:
 	BetcherNetwork() {
 		// Заполняем массив случайными числами
 		for (int i = 0; i < sizeArray; i++) {
-			array[i] = rand() % 10;
+			array[i] = rand() % 41 - 20;
 		}
 	}
 
@@ -97,27 +98,60 @@ public:
 		cout << endl;
 	}
 
+	// Метод для вывода вертикальной линии
+	string outputVLine() {
+		return "--- | -";
+	}
+
+	// Метод для вывода числа
+	string oN(int numb) {
+
+		string number;
+
+		number = to_string(numb);
+		if (number.size() == 1) number = " " + number + " ";
+		else if (number.size() == 2) number = " " + number;
+		string outputNumber = "-- " + number + " ";
+
+		return outputNumber;
+	}
+
+	// Метод для вывода горизонтальной линии 
+	string outputLine(int number) {
+
+		string line = "-";
+		string outputLine;
+
+		for (int i = 0; i < number; i++) {
+			outputLine += line;
+		}
+
+		return outputLine;
+	}
+
 	// Метод для вывода сортировочной сети на экран
 	void outputNetwork() {
 
 		cout << endl << endl;
-		cout << "\t 0.   " << all[0][0] << " ---- " << all[2][0] << " ---" << "-" << "----- " << all[4][0] << " ---- " << all[12][0] << " ---" << "-" << "----" << "-" << "----" << "-" << "----- " << all[16][0] << " ---" << "-" << "----- " << all[18][0] << "\n";
-		cout << "\t      " << "|" << " ---- " << "|" << " ---" << "-" << "----- " << "|" << " ---- " << "|" << " ---" << "-" << "----" << "-" << "----" << "-" << "----- " << "|" << " ---" << "-" << "----- " << "|" << "\n";
-		cout << "\t 1.   " << all[0][1] << " ---- " << "|" << " -- " << all[3][1] << " ---- " << all[4][1] << " ---- " << "|" << " -- " << all[13][1] << " ---" << "-" << "----" << "-" << "----- " << "|" << " -- " << all[17][1] << " ---- " << all[18][1] << "\n";
-		cout << "\t      " << "-" << "----- " << "|" << " -- " << "|" << " -----" << "-" << "----- " << "|" << " -- " << "|" << " ---" << "-" << "----" << "-" << "----- " << "|" << " -- " << "|" << " -----" << "-" << "\n";
-		cout << "\t 2.   " << all[1][2] << " ---- " << all[2][2] << " -- " << "|" << " ---- " << all[5][2] << " ---- " << "|" << " -- " << "|" << " -- " << all[14][2] << " ---" << "-" << "----- " << all[16][2] << " -- " << "|" << " ---- " << all[19][2] << "\n";
-		cout << "\t      " << "|" << " -----" << "-" << "--- " << "|" << " ---- " << "|" << " ---- " << "|" << " -- " << "|" << " -- " << "|" << " ---" << "-" << "------" << "-" << "--- " << "|" << " ---- " << "|" << "\n";
-		cout << "\t 3.   " << all[1][3] << " -----" << "-" << "--- " << all[3][3] << " ---- " << all[5][3] << " ---- " << "|" << " -- " << "|" << " -- " << "|" << " -- " << all[15][3] << " -----" << "-" << "--- " << all[17][3] << " ---- " << all[19][3] << "\n";
-		cout << "\t      " << "-" << "------" << "-" << "----" << "-" << "------" << "-" << "----- " << "|" << " -- " << "|" << " -- " << "|" << " -- " << "|" << " -----" << "-" << "----" << "-" << "------" << "-" << "\n";
-		cout << "\t 4.   " << all[6][4] << " ---- " << all[8][4] << " ---" << "-" << "----- " << all[10][4] << " ---- " << all[12][4] << " -- " << "|" << " -- " << "|" << " -- " << "|" << " ---- " << all[20][4] << " ---" << "-" << "----- " << all[22][4] << "\n";
-		cout << "\t      " << "|" << " ---- " << "|" << " ---" << "-" << "----- " << "|" << " -----" << "-" << "--- " << "|" << " -- " << "|" << " -- " << "|" << " ---- " << "|" << " ---" << "-" << "----- " << "|" << "\n";
-		cout << "\t 5.   " << all[6][5] << " ---- " << "|" << " -- " << all[9][5] << " ---- " << all[10][5] << " -----" << "-" << "--- " << all[13][5] << " -- " << "|" << " -- " << "|" << " ---- " << "|" << " -- " << all[21][5] << " ---- " << all[22][5] << "\n";
-		cout << "\t      " << "-" << "----- " << "|" << " -- " << "|" << " -----" << "-" << "------" << "-" << "----" << "-" << "--- " << "|" << " -- " << "|" << " ---- " << "|" << " -- " << "|" << " -----" << "-" << "\n";
-		cout << "\t 6.   " << all[7][6] << " ---- " << all[8][6] << " -- " << "|" << " ---- " << all[11][6] << " -----" << "-" << "----" << "-" << "--- " << all[14][6] << " -- " << "|" << " ---- " << all[20][6] << " -- " << "|" << " ---- " << all[23][6] << "\n";
-		cout << "\t      " << "|" << " -----" << "-" << "--- " << "|" << " ---- " << "|" << " -----" << "-" << "----" << "-" << "----" << "-" << "--- " << "|" << " -----" << "-" << "--- " << "|" << " ---- " << "|" << "\n";
-		cout << "\t 7.   " << all[7][7] << " -----" << "-" << "--- " << all[9][7] << " ---- " << all[11][7] << " -----" << "-" << "----" << "-" << "----" << "-" << "--- " << all[15][7] << " -----" << "-" << "--- " << all[21][7] << " ---- " << all[23][7] << "\n";
-	}
 
+		cout << "\t      " << outputLine(79) << "\n";
+		cout << "\t 0.   " << oN(all[0][0]) << oN(all[2][0]) << outputLine(7) << oN(all[4][0]) << oN(all[12][0]) << outputLine(21) << oN(all[16][0]) << outputLine(7) << oN(all[18][0]) << outputLine(2) << "\n";
+		cout << "\t      " << outputVLine() << outputVLine() << outputLine(7) << outputVLine() << outputVLine() << outputLine(21) << outputVLine() << outputLine(7) << outputVLine() << outputLine(2) << "\n";
+		cout << "\t 1.   " << oN(all[0][1]) << outputVLine() << oN(all[3][1]) << oN(all[4][1]) << outputVLine() << oN(all[13][1]) << outputLine(14) << outputVLine() << oN(all[17][1]) << oN(all[18][1]) << outputLine(2) << "\n";
+		cout << "\t      " << outputLine(7) << outputVLine() << outputVLine() << outputLine(7) << outputVLine() << outputVLine() << outputLine(14) << outputVLine() << outputVLine() << outputLine(9) << "\n";
+		cout << "\t 2.   " << oN(all[1][2]) << oN(all[2][2]) << outputVLine() << oN(all[5][2]) << outputVLine() << outputVLine() << oN(all[14][2]) << outputLine(7) << oN(all[16][2]) << outputVLine() << oN(all[19][2]) << outputLine(2) << "\n";
+		cout << "\t      " << outputVLine() << outputLine(7) << outputVLine() << outputVLine() << outputVLine() << outputVLine() << outputVLine() << outputLine(14) << outputVLine() << outputVLine() << outputLine(2) << "\n";
+		cout << "\t 3.   " << oN(all[1][3]) << outputLine(7) << oN(all[3][3]) << oN(all[5][3]) << outputVLine() << outputVLine() << outputVLine() << oN(all[15][3]) << outputLine(7) << oN(all[17][3]) << oN(all[19][3]) << outputLine(2) << "\n";
+		cout << "\t      " << outputLine(28) << outputVLine() << outputVLine() << outputVLine() << outputVLine() << outputLine(23) << "\n";
+		cout << "\t 4.   " << oN(all[6][4]) << oN(all[8][4]) << outputLine(7) << oN(all[10][4]) << oN(all[12][4]) << outputVLine() << outputVLine() << outputVLine() << oN(all[20][4]) << outputLine(7) << oN(all[22][4]) << outputLine(2) << "\n";
+		cout << "\t      " << outputVLine() << outputVLine() << outputLine(7) << outputVLine() << outputLine(7) << outputVLine() << outputVLine() << outputVLine() << outputVLine() << outputLine(7) << outputVLine() << outputLine(2) << "\n";
+		cout << "\t 5.   " << oN(all[6][5]) << outputVLine() << oN(all[9][5]) << oN(all[10][5]) << outputLine(7) << oN(all[13][5]) << outputVLine() << outputVLine() << outputVLine() << oN(all[21][5]) << oN(all[22][5]) << outputLine(2) << "\n";
+		cout << "\t      " << outputLine(7) << outputVLine() << outputVLine() << outputLine(21) << outputVLine() << outputVLine() << outputVLine() << outputVLine() << outputLine(9) << "\n";
+		cout << "\t 6.   " << oN(all[7][6]) << oN(all[8][6]) << outputVLine() << oN(all[11][6]) << outputLine(14) << oN(all[14][6]) << outputVLine() << oN(all[20][6]) << outputVLine() << oN(all[23][6]) << outputLine(2) << "\n";
+		cout << "\t      " << outputVLine() << outputLine(7) << outputVLine() << outputVLine() << outputLine(21) << outputVLine() << outputLine(7) << outputVLine() << outputVLine() << outputLine(2) << "\n";
+		cout << "\t 7.   " << oN(all[7][7]) << outputLine(7) << oN(all[9][7]) << oN(all[11][7]) << outputLine(21) << oN(all[15][7]) << outputLine(7) << oN(all[21][7]) << oN(all[23][7]) << outputLine(2) << "\n";
+		cout << "\t      " << outputLine(79) << "\n";
+	}
 };
 
 int main() {
