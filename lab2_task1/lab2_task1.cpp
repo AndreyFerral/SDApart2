@@ -5,7 +5,29 @@
 
 #include <iostream>
 #include <vector>
+#include <chrono>
 using namespace std;
+
+// Функция для проверки вводимого значения
+int inputInt()
+{
+	int number;
+
+	// Проверка на соответствие типу Integer
+	while ((!(cin >> number) || (cin.peek() != '\n'))) {
+		cin.clear();
+		while (cin.get() != '\n');
+		cout << "Повторите ввод:\n  > ";
+	}
+
+	// Проверка числа на положительность
+	if (number <= 0) {
+		cout << "Повторите ввод:\n  > ";
+		number = inputInt();
+	}
+
+	return number;
+}
 
 // Функция, которая выводит вектор векторов
 void outputVectorOfVectors(vector<vector<int>> vector)
@@ -37,8 +59,15 @@ void outputMaxClique(vector<vector<int>> vector)
 		}
 	}
 
+	// Остановим функцию, если клик нет
+	if (vector[maxCliqueIndex].size() == 1) {
+		cout << "В графе не обнаружено клик " << "\n";
+		return;
+	}
+
 	// Выведем первую максимальную клику
 	cout << "Первая максимальная клика: " << "\n";
+
 	for (int i = 0; i < vector[maxCliqueIndex].size(); ++i)
 	{
 		cout << vector[maxCliqueIndex][i] << " ";
@@ -56,26 +85,30 @@ bool isClique(vector<vector<int>> graph, int vertex1, int vertex2)
 	return false;
 }
 
+
 int main()
 {
+	srand(time(0)); // генерация случайных чисел
 	setlocale(LC_ALL, "Russian");
 
-	const int sizeArray = 10;
+	cout << "Введите размерность матрицы смежности: ";
+	int sizeArray = inputInt();
+	cout << endl;
 
-	// Матрица смежности
-	bool matrixAdjacency[sizeArray][sizeArray] =
-	{
-		0,0,0,0,0,1,0,0,0,0,
-		0,0,1,0,0,0,1,0,0,0,
-		0,1,0,1,0,0,0,1,0,0,
-		0,0,1,0,1,0,0,0,1,0,
-		1,0,0,1,0,0,0,0,0,1,
-		0,0,0,0,0,0,1,0,0,1,
-		0,0,1,1,0,0,0,1,0,0,
-		0,0,0,0,1,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,1,
-		0,0,0,0,0,0,0,0,0,0
-	};
+	// Указываем размер для матрицы смежности
+	int** matrixAdjacency = new int* [sizeArray];
+
+	// Выделяем память под каждую строку массива 
+	for (int i = 0; i < sizeArray; i++) {
+		matrixAdjacency[i] = new int[sizeArray];
+	}
+
+	// Заполяем матрицу смежности 0 и 1
+	for (int i = 0; i < sizeArray; i++) {
+		for (int j = 0; j < sizeArray; j++) {
+			matrixAdjacency[i][j] = rand() % 2;
+		}
+	}
 
 	// Выводим на экран исходный граф
 	cout << "Исходный граф: " << "\n";
@@ -87,7 +120,8 @@ int main()
 		}
 		cout << "\n";
 	}
-	cout << "\n";
+
+	auto begin = chrono::high_resolution_clock::now(); // начальное время
 
 	vector<vector<int>> adjacentVertexs;
 	vector<int> helpVertexs;
@@ -108,9 +142,11 @@ int main()
 		helpVertexs.clear();
 	}
 
+	/*
 	// Выводим на экран вектор векторов, в котором вершина со смежными вершинами
 	cout << "Вершины со смежными вершинами: " << "\n";
 	outputVectorOfVectors(adjacentVertexs);
+	*/
 
 	vector<vector<int>> clique; // вектор клик
 	vector<int> helpClique; // клика
@@ -174,4 +210,10 @@ int main()
 
 	// Выводим на экран первую максимальную клику
 	outputMaxClique(clique);
+
+	auto end = chrono::high_resolution_clock::now(); // конечное время
+	auto time = chrono::duration_cast<chrono::nanoseconds>(end - begin).count(); // искомое время
+
+	cout << "\n";
+	cout << "Время работы: " << time << " ns" << endl;
 }

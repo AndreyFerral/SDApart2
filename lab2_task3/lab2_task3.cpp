@@ -3,48 +3,42 @@
 */
 
 #include <iostream>
+#include <chrono>
 using namespace std;
 
 class HamiltonCircle {
 
-	static const int sizeGraph = 10; // размер графа
-	int startVertex = 2;			 // начальная вершина
+	static const int startVertex = 0; // начальная вершина
 
-	int color[sizeGraph]; // номер хода, на котором посещается вершина
-	int path[sizeGraph];  // номера посещаемых вершин
-
-	// Матрица смежности
-	int matrixAdjacency[sizeGraph][sizeGraph] =
-	{
-		0,0,0,0,0,1,0,0,0,0,
-		0,0,1,0,0,0,1,0,0,0,
-		0,1,0,1,0,0,0,1,0,0,
-		0,0,1,0,1,0,0,0,1,0,
-		1,0,0,1,0,0,0,0,0,1,
-		0,0,0,0,0,0,1,0,0,1,
-		0,0,0,1,0,0,0,1,0,0,
-		0,0,0,0,1,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,1,
-		0,0,0,0,0,0,0,0,0,0
-	};
+	int** matrixAdjacency; // матрица смежности
+	int* color;			   // номер хода, на котором посещается вершина
+	int* path;		       // номера посещаемых вершин
 
 public:
 
-	// Переопределенный конструктор класса
-	HamiltonCircle() {
+	// Метод для проверки вводимого значения
+	int inputInt()
+	{
+		int number;
 
-		// Заполняем массив значением -1
-		for (int i = 0; i < sizeGraph; i++)
-		{
-			color[i] = -1;
+		// Проверка на соответствие типу Integer
+		while ((!(cin >> number) || (cin.peek() != '\n'))) {
+			cin.clear();
+			while (cin.get() != '\n');
+			cout << "Повторите ввод:\n  > ";
 		}
 
-		// Задаем изначения значения
-		path[0] = startVertex;
-		color[startVertex] = startVertex;
+		// Проверка числа на положительность
+		if (number <= 0) {
+			cout << "Повторите ввод:\n  > ";
+			number = inputInt();
+		}
+
+		return number;
 	}
 
-	void outputGraph()
+	// Метод для вывода матрицы смежности
+	void outputGraph(int sizeGraph)
 	{
 		for (int i = 0; i < sizeGraph; ++i)
 		{
@@ -54,9 +48,11 @@ public:
 			}
 			cout << "\n";
 		}
+		cout << "\n";
 	}
 
-	void outputPath()
+	// Метод для вывода пути
+	void outputPath(int sizeGraph)
 	{
 		// Выводим на экран весь путь
 		for (int i = 0; i < sizeGraph; i++)
@@ -67,8 +63,59 @@ public:
 		cout << path[0] << "\n";
 	}
 
-	// подпрограмма нахождения гамильтонова цикла
-	bool gamilton(int step)
+	void start() {
+	
+		cout << "Введите размерность матрицы смежности: ";
+		int sizeGraph = inputInt();
+		cout << endl;
+
+		// Указываем размер для матрицы смежности
+		matrixAdjacency = new int*[sizeGraph];
+
+		// Выделяем память под каждую строку массива 
+		for (int i = 0; i < sizeGraph; i++) {
+			matrixAdjacency[i] = new int[sizeGraph];
+		}
+
+		// Заполяем матрицу смежности 0 и 1
+		for (int i = 0; i < sizeGraph; i++) {
+			for (int j = 0; j < sizeGraph; j++) {
+				matrixAdjacency[i][j] = rand() % 2;
+			}
+		} 
+
+		// Выводим исходный граф на экран
+		cout << "Исходный граф: \n";
+		outputGraph(sizeGraph);
+
+		// Указываем размеры для динамических массивов
+		path = new int[sizeGraph];
+		color = new int[sizeGraph];
+
+		// Заполняем массив color значением -1
+		for (int i = 0; i < sizeGraph; i++)
+		{
+			color[i] = -1;
+		}
+
+		// Задаем изначения значения
+		path[0] = startVertex;
+		color[startVertex] = startVertex;
+
+		// Первый шаг для функции поиска цикла
+		const int firstStep = 1;
+
+		cout << "Гамильтонов цикл: \n";
+
+		// Если функцию составила путь, то выводим его
+		if (gamilton(firstStep, sizeGraph)) outputPath(sizeGraph);
+		else cout << "Нет решений \n";
+
+		cout << endl;
+	}
+
+	// Метод для нахождения гамильтонова цикла
+	bool gamilton(int step, int sizeGraph)
 	{
 		bool isGamiltonCircleFind = false;
 
@@ -92,7 +139,7 @@ public:
 					// cout << color[vertex] << " номер хода, " << path[step] << " посещенная вершина\n";
 
 					// Проверяем следующую вершину на соответствие
-					isGamiltonCircleFind = gamilton(step + 1);
+					isGamiltonCircleFind = gamilton(step + 1, sizeGraph);
 
 					// Если далее невозможно построить гамильтонов цикл, то откатываемся
 					if (!isGamiltonCircleFind) {
@@ -107,21 +154,19 @@ public:
 	}
 };
 
-
 int main()
 {
+	srand(time(0)); // генерация случайных чисел
 	setlocale(LC_ALL, "Russian");
 
 	HamiltonCircle hamilton;
-	const int firstStep = 1; // первый шаг для функции поиска цикла
 
-	cout << "Исходный граф: \n";
-	hamilton.outputGraph();
+	auto begin = chrono::high_resolution_clock::now(); // начальное время
 
-	cout << endl;
-	cout << "Гамильтонов цикл: \n";
+	hamilton.start();
 
-	// Если функцию составила путь, то выводим его
-	if (hamilton.gamilton(firstStep)) hamilton.outputPath();
-	else cout << "Нет решений \n";
+	auto end = chrono::high_resolution_clock::now(); // конечное время
+	auto time = chrono::duration_cast<chrono::nanoseconds>(end - begin).count(); // искомое время
+
+	cout << "Время работы: " << time << " ns" << endl;
 }
